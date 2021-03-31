@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var usedWords = [String]()
     @State private var rootWord = ""
     @State private var newWord = ""
+    @State private var score: Int = 0
     
     @State private var errorTitle = ""
     @State private var errorMessage = ""
@@ -27,12 +28,14 @@ struct ContentView: View {
                     Image(systemName: "\($0.count).circle")
                     Text($0)
                 }
+                Text("Your score: \(score)")
             }
             .navigationTitle(rootWord)
+            .navigationBarItems(trailing: Button("Restart") {startGame()})
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError) {
-                Alert(title: Text("errorTitle"),
-                      message: Text("errorMessage"),
+                Alert(title: Text(errorTitle),
+                      message: Text(errorMessage),
                       dismissButton: .default(Text("OK")))
             }
         }
@@ -62,19 +65,28 @@ struct ContentView: View {
             return
         }
         
+        score += updateScore(word: answer)
+        
         usedWords.insert(answer, at: 0)
         newWord = ""
     }
     
     func startGame() {
+        score = 0
+        newWord = ""
         if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: ".txt") {
             if let startWords = try? String(contentsOf: startWordsURL) {
                 let allWords = startWords.components(separatedBy: "\n")
                 rootWord = allWords.randomElement() ?? "silkworm"
+                usedWords = []
                 return
             }
         }
         fatalError("Could not load start.txt from bundle.")
+    }
+    
+    func updateScore(word: String) -> Int {
+        word.count
     }
     
     func isDifferentFromRoot(word: String) -> Bool {
