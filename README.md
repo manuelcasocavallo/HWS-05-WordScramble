@@ -1,4 +1,4 @@
-# HWS-05-WordScramble
+# WordScramble
 ### WordScramble
 
 ### Hacking with SwiftUI - Project 5
